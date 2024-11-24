@@ -1,0 +1,16 @@
+# Ignore Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+override.tf
+override.tf.json
+*tfplan
+
+# Ignore .env or other sensitive files
+.env
+
+# Ignore IDE or editor files (VSCode, JetBrains, etc.)
+.vscode/
+.idea/
