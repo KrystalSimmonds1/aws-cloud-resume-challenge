@@ -109,6 +109,12 @@ time {
 
 /* Certification Section */
 #certification-section ul {
-  padding-left: 1.5rem;
-  list-style: square;
+  padding-left: 1.3rem;
+  list-style: disc;
+}
+
+/* Education Section */
+#education-section ul {
+  padding-left: 1.3rem;
+  list-style: disc;
 }
