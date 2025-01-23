@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.77.0"
+      version = "~> 5.83.0"
     }
   }
 
@@ -10,6 +10,14 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  profile = "default"
+  region = var.region
+}
+
+resource "aws_s3_bucket" "resume_bucket" {
+  bucket        = var.bucket_name
+  force_destroy = true
+
+  tags = {
+    Name = var.bucket_name
+  }
 }
