@@ -70,6 +70,11 @@ resource "aws_s3_bucket_policy" "resume_bucket_policy" {
         Principal = "*"
         Action    = "s3:GetObject"
         Resource  = "${aws_s3_bucket.resume_bucket.arn}/*"
+        Condition = {
+          StringEquals = {
+            "aws:PrincipalOrgID" = "*"
+          }
+        }
       }
     ]
   })
