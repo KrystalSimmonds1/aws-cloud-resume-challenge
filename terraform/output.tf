@@ -1,5 +1,4 @@
-output "resume_website_endpoint" {
-  value       = aws_s3_bucket_website_configuration.resume_site.website_endpoint
-  description = "The URL for the S3 bucket resume website"
-
+output "resume_website_url" {
+  value       = aws_cloudfront_distribution.resume_bucket_distribution.domain_name
+  description = "The CloudFront URL for the resume website"
 }

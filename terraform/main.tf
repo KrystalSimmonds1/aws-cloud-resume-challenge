@@ -43,19 +43,7 @@ resource "aws_s3_bucket_acl" "resume_bucket" {
   depends_on = [aws_s3_bucket_ownership_controls.resume_bucket]
 
   bucket = aws_s3_bucket.resume_bucket.id
-  acl    = "public-read"
-}
-
-resource "aws_s3_bucket_website_configuration" "resume_site" {
-  bucket = aws_s3_bucket.resume_bucket.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  # error_document {
-  #   key = error.html
-  # }
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_policy" "resume_bucket_policy" {
@@ -150,3 +138,48 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
   policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
 }
 
+# Create Origin Access Control (OAC) for CloudFront
+resource "aws_cloudfront_origin_access_control" "resume_oac" {
+  name                              = "ResumeOAC"
+  description                       = "OAC for S3 bucket"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+# CloudFront Distribution
+resource "aws_cloudfront_distribution" "resume_bucket_distribution" {
+  origin {
+    domain_name              = "${var.bucket_name}.s3.amazonaws.com"
+    origin_id                = "S3Origin"
+    origin_access_control_id = aws_cloudfront_origin_access_control.resume_oac.id
+  }
+
+
+  enabled = true
+
+  default_cache_behavior {
+    target_origin_id       = "S3Origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+
+    # AWS Managed Caching Policy
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+
+    # AWS Managed Origin Request Policy for S3
+    origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
+  }
+
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none" # Allows access from all locations
+    }
+  }
+}
