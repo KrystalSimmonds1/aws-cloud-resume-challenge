@@ -155,7 +155,6 @@ resource "aws_cloudfront_distribution" "resume_bucket_distribution" {
     origin_access_control_id = aws_cloudfront_origin_access_control.resume_oac.id
   }
 
-
   enabled = true
 
   default_cache_behavior {
@@ -170,7 +169,11 @@ resource "aws_cloudfront_distribution" "resume_bucket_distribution" {
 
     # AWS Managed Origin Request Policy for S3
     origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
+
+    # AWS Managed Response Headers Policy (For Cloudflare Host Header)
+    response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
   }
+
 
   custom_error_response {
     error_code         = 403
@@ -184,15 +187,14 @@ resource "aws_cloudfront_distribution" "resume_bucket_distribution" {
     response_page_path = "/index.html"
   }
 
-
-
   viewer_certificate {
     cloudfront_default_certificate = true
   }
 
+
   restrictions {
     geo_restriction {
-      restriction_type = "none" # Allows access from all locations
+      restriction_type = "none"
     }
   }
 }
