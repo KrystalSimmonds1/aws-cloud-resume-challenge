@@ -31,10 +31,10 @@ html {
   border: 1px solid #ddd; /* Define the border for the entire content */
   border-radius: 8px; /* Add rounded corners */
   padding: 2rem; /* Add inner spacing */
-  margin: 2rem auto; /* Center it with vertical margin */
+  margin: 2rem auto; /* Centre it with vertical margin */
   max-width: 1200px; /* Limit the width */
-  background-color: #fff; /* Optional: Add a white background */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
@@ -59,6 +59,16 @@ header span {
 
 header #email {
   color: #028152;
+}
+
+/*Visitor Counter Container*/
+#visitor-counter-container {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
 }
 
 /* Remove borders from individual sections */
