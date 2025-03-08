@@ -16,5 +16,5 @@ override.tf.json
 .idea/
 
 # Ignore Lambda zip file and JSON response file from invokation of Lambda
-.zip
+lambda.zip
 response.json
