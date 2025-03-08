@@ -79,3 +79,74 @@ resource "aws_s3_bucket_policy" "resume_bucket_policy" {
     ]
   })
 }
+
+# DynamoDB Table for Visitor Counter
+
+resource "aws_dynamodb_table" "visitor_count" {
+  name         = "VisitorCount"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
+# Lambda Function Configuration
+
+resource "aws_lambda_function" "resume_lambda" {
+  function_name    = "ResumeVisitorCounter"
+  role             = aws_iam_role.lambda_iam_role.arn
+  handler          = "lambda_function.lambda_handler"
+  runtime          = "python3.9"
+  filename         = "../lambda.zip"
+  source_code_hash = filebase64sha256("../lambda.zip")
+  timeout          = 10
+
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.visitor_count.name
+    }
+  }
+}
+
+# IAM Roles
+# Lambda IAM Role
+
+resource "aws_iam_role" "lambda_iam_role" {
+  name = "lambda_iam_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  name        = "lambda_dynamodb_access"
+  description = "Allows Lambda function to read and write to DynamoDB"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"]
+        Resource = aws_dynamodb_table.visitor_count.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
+  role       = aws_iam_role.lambda_iam_role.name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
+}
+
