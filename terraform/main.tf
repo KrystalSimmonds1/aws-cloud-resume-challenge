@@ -138,7 +138,7 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
   policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
 }
 
-# Create Origin Access Control (OAC) for CloudFront
+# Create Origin Access Control (OAC) for CloudFront Distribution
 resource "aws_cloudfront_origin_access_control" "resume_oac" {
   name                              = "ResumeOAC"
   description                       = "OAC for S3 bucket"
@@ -171,6 +171,19 @@ resource "aws_cloudfront_distribution" "resume_bucket_distribution" {
     # AWS Managed Origin Request Policy for S3
     origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
   }
+
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
 
 
   viewer_certificate {
